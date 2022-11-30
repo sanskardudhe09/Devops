@@ -1,0 +1,8 @@
+- name: Ping servers
+  hosts: all
+  tasks:
+     - ping:
+       register: result
+     - name: Display ping Result
+       debug:
+        var: result

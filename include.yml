@@ -1,0 +1,10 @@
+- name: Deploy Web & DB Server
+  hosts: all
+  tasks:
+  - include_vars:
+      file: /home/guest/Ansible/info.yml
+      name: email_data
+  - mail:
+      to: {{email_data.admin_email }}
+      subject: Service Alert
+      body: Httpd Service is down

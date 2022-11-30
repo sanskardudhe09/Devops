@@ -1,0 +1,17 @@
+-
+  hosts: server1
+  tasks:
+    - block:
+      - name: Install MySQL
+        yum: name=mysql-server state=present
+      - name: Start MySQL Service
+        service: name=mysql-server state=started
+      become_user: db-user
+      when: ansible_facts['distribution'] == 'CentOS'
+    - block:
+      - name: Install Nginx
+        yum: name=nginx state=present
+      - name: Start Nginx Service
+        service: name=nginx state=started
+      become_user: web-user
+      when: ansible_facts['distribution'] == 'CentOS'

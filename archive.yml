@@ -1,0 +1,13 @@
+---
+- hosts: localhost
+  tasks:
+  - name: Compress a folder
+    archive:
+      path: /home/guest/Terraform/sample
+      dest: /tmp/terraform.gz
+      format: zip|tar|bz2|xz|gz
+  - name: Uncompress a folder
+    unarchive:
+      src: /tmp/web.gz
+      dest: /tmp
+      remote_src: yes

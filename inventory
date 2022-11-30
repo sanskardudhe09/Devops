@@ -1,2 +1,5 @@
-jenkins ansible_host=192.168.122.204 ansible_ssh_pass=redhat ansible_user=root
-kubernetes ansible_host=192.168.122.30 ansible_ssh_pass=redhat ansible_user=root
+[ansible_servers]
+server1
+server2
+
+

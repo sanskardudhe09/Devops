@@ -1,0 +1,12 @@
+---
+- hosts: all
+  tasks:
+  - name: Create LVM Volume Group
+    lvg:
+      vg: vg1
+      pvs: /dev/sdb1,/dev/sdb2
+  - name: Create LVM Volume
+    lvol:
+      vg: vg1
+      lv: lvol1
+      size: 2g

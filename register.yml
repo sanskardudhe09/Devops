@@ -1,0 +1,8 @@
+---
+- name: Check /etc/hosts file
+  hosts: all
+  tasks:
+  - shell: cat /etc/hosts
+    register: result
+  - debug:
+      var: result.stdout_lines

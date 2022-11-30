@@ -1,0 +1,9 @@
+-
+  name: Start Services in order
+  hosts: localhost
+  tasks:
+    - name: Start the database service
+      service: 
+        name: postgresql 
+        state:  started
+        enbled: yes

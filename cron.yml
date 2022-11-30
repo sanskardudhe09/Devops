@@ -1,0 +1,11 @@
+---
+- hosts: all
+  tasks:
+  - name: Create a scheduled task
+    cron:
+      name: Run daily health report
+      job: sh /opt/scripts/health.sh
+      month: 2
+      day: 19
+      hour: 8
+      minute: 10

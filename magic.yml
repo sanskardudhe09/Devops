@@ -1,0 +1,6 @@
+---
+- name: Print dns server
+  hosts: all
+  tasks:
+  - debug:        
+      msg: ‘{{ hostvars['server2']. dns_server }}’

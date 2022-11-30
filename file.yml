@@ -1,0 +1,14 @@
+---
+- hosts: all
+  tasks:
+  - name: Create Directory
+    file:
+      path: /opt/app/web
+      state: directory
+  - name: Create File
+    file:
+      path: /opt/app/web/index.html
+      state: touch
+      owner: app-owner
+      group: app-owner
+      mode: ’0644

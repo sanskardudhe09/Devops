@@ -1,0 +1,13 @@
+---
+- hosts: all
+  tasks:
+  - name: Create a user Maria
+    user:
+      name: maria
+      uid: 1001
+      group: developers
+      shell: /bin/bash
+
+  - name: Create a group
+    group:
+      name: developers

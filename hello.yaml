@@ -1,0 +1,8 @@
+- name: Print hello message
+  hosts: all
+
+  vars: 
+    message: Hello from Ansible!
+  tasks:
+     - debug:
+         msg: '{{ message |upper}}'
