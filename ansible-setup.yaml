@@ -1,0 +1,113 @@
+- hosts: all
+  vars:
+    jenkins_packages:
+      - jenkins
+      - java-11-openjdk
+      - git
+  tasks:
+    - name: Display inventory hostname
+      command: echo "{{inventory_hostname}}"
+    - name: Change the hostname to our standard
+      ansible.builtin.hostname:
+        name="{{inventory_hostname}}"
+    - name: Install Docker
+      yum:
+        name: docker
+        state: present
+    - name: Enable and start docker engine
+      ansible.builtin.systemd:
+        name: docker
+        enabled: yes
+        state: started
+    - block:
+      - name: Add repository
+        ansible.builtin.yum_repository:
+          name: jenkins
+          description: Jenkins Repo
+          baseurl: http://pkg.jenkins.io/redhat-stable
+
+      - name: Install Jenkins
+        yum:
+          name: '{{ jenkins_packages}}'
+          state: present
+      - name: Enable local git repository in Jenkins
+        ansible.builtin.lineinfile:
+          path: /usr/lib/systemd/system/jenkins.service
+          regexp: 'JAVA_OPTS'
+          line: 'Environment="JAVA_OPTS=-Djava.awt.headless=true -Dhudson.plugins.git.GitSCM.ALLOW_LOCAL_CHECKOUT=true"'
+      - name: Change Jenkins port to 8090
+        ansible.builtin.lineinfile:
+          path: /usr/lib/systemd/system/jenkins.service
+          regexp: 'JENKINS_PORT'
+          line: 'Environment="JENKINS_PORT=8090"'
+      - name: Add jenkins user to groups
+        user:
+          name: jenkins
+          groups:
+            - root
+            - docker
+      - name: Enable Jenkins service
+        ansible.builtin.systemd:
+          name: jenkins
+          enabled: yes
+          state: restarted
+          daemon_reload: yes
+      - name: Open port 8090
+        ansible.posix.firewalld:
+          port: 8090/tcp
+          permanent: yes
+          state: enabled
+          immediate: yes
+      - name: Copying hello-python app (sub directories/files)
+        become: true 
+        copy:
+          src: ../hello-python
+          dest: /root
+          owner: root
+          group: root        
+          mode: 0644
+      - name: Copying go based sample-app (sub directories/files)
+        become: true
+        copy:
+          src: ../sample-app
+          dest: /root
+          owner: root
+          group: root
+          mode: 0744
+
+      when: ansible_hostname == 'jenkins'
+    - block:
+      - name: Install Kubernetes
+        yum:
+          name: https://storage.googleapis.com/minikube/releases/latest/minikube-latest.x86_64.rpm
+          state: present
+
+      - name: Add kube user
+        user:
+          name: kube
+          shell: /bin/bash
+          password: kube
+      - name: Add Kube user to groups
+        user:
+          name: kube
+          groups:
+            - kube
+            - docker
+      - name: Add kube to sudoer
+        community.general.sudoers:
+          name: kube as root
+          state: present
+          user: kube
+          runas: root
+          commands: ALL
+      - name: Add repository
+        ansible.builtin.yum_repository:
+          name: kubectl
+          description: Kubectl Repo
+          baseurl: https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
+      - name: Install Kubectl
+        yum:
+          name: kubectl
+          state: present
+
+      when: ansible_hostname == 'kubernetes'
